@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulateur de Trajectoire Tp,q</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background-color: #f4f7f6;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .lang-selector {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+        .lang-btn {
+            background-color: #ecf0f1;
+            border: 1px solid #bdc3c7;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-left: 5px;
+            font-size: 14px;
+        }
+        .lang-btn.active {
+            background-color: #3498db;
+            color: white;
+            border-color: #2980b9;
+        }
+
+        .header-banner {
+            background: linear-gradient(135deg, #2980b9, #2c3e50);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .header-banner h1, .header-banner h2 {
+            color: white; 
+            margin: 0;
+        }
+        .header-banner h1 {
+            font-size: 1.6em;
+            margin-bottom: 10px;
+        }
+        .header-banner h2 {
+            font-size: 1.2em;
+            font-weight: normal;
+        }
+        .header-banner a {
+            color: #ecf0f1;
+            text-decoration: underline;
+        }
+        .header-banner a:hover {
+            color: #f1c40f; 
+        }
+
+        .warning-box {
+            background-color: #fdeaea;
+            border: 1px solid #e74c3c;
+            color: #c0392b;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(231, 76, 60, 0.1);
+        }
+        
+        .theory-box {
+            background-color: #ffffff;
+            border-left: 5px solid #34495e;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .vulgarisation-box {
+            background-color: #e8f4f8;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            color: #1a5276;
+        }
+        .vulgarisation-box h3 {
+            margin-top: 0;
+            color: #2980b9;
+            text-align: center;
+        }
+
+        .form-group {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            flex-wrap: wrap; 
+        }
+        input[type="number"] {
+            width: 80px;
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        button:hover { background-color: #2980b9; }
+        button.action-btn { background-color: #27ae60; }
+        button.action-btn:hover { background-color: #2ecc71; }
+        
+        .blue-log {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 1.1em;
+            margin-bottom: 25px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .blue-log strong { color: #f1c40f; }
+        
+        #log-simulation {
+            font-family: monospace;
+            font-size: 1em;
+            white-space: pre-wrap;
+        }
+
+        .controls {
+            text-align: center;
+            margin-bottom: 15px;
+            font-weight: bold;
+            color: #555;
+        }
+        .controls input[type="range"] {
+            width: 200px;
+            vertical-align: middle;
+        }
+        
+        .svg-container {
+            width: 100%;
+            max-height: 70vh;
+            overflow: auto;
+            text-align: center;
+            border: 1px solid #ddd;
+            background-color: #fafafa;
+            border-radius: 4px;
+            padding: 10px 0;
+        }
+        svg { 
+            max-width: 100%; 
+            max-height: 100%;
+            height: auto;
+            display: block;
+            margin: auto;
+            transition: width 0.2s ease;
+        }
+        circle { stroke: #555; stroke-width: 1.5px; }
+        .node-transient { fill: #add8e6; } 
+        .node-cycle { fill: #f08080; } 
+        text {
+            font-size: 12px;
+            font-weight: bold;
+            font-family: Arial, sans-serif;
+            pointer-events: none;
+        }
+        line { stroke: gray; stroke-width: 1.5px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <div class="lang-selector">
+        <button class="lang-btn active" onclick="setLang('fr')" id="btn-fr">Français</button>
+        <button class="lang-btn" onclick="setLang('en')" id="btn-en">English</button>
+    </div>
+
+    <div class="header-banner">
+        <h1 id="main-title">Systèmes Dynamiques Discrets modulo 2<sup>p</sup>+2<sup>q</sup></h1>
+        <h2 id="subtitle">Voir la Conjecture de Bouhamidi - ArXiv:2601.06208, (2026), <a href="https://doi.org/10.48550/arXiv.2601.06208" target="_blank">arXiv.2601.06208</a></h2>
+    </div>
+
+    <div id="warning-message" class="warning-box"></div>
+
+    <div class="theory-box" id="theory-box-content"></div>
+
+    <div class="vulgarisation-box" id="vulgarisation-box-content"></div>
+
+    <div class="form-group">
+        <label><span id="label-p">Choix de p =</span> <input type="number" id="input_p" value="3" min="0"></label>
+        <label><span id="label-q">Choix de q =</span> <input type="number" id="input_q" value="1" min="0"></label>
+        <button id="btn-generate" onclick="genererConjecture()">Générer l'énoncé de la conjecture</button>
+    </div>
+
+    <div id="conjecture-text" class="blue-log">
+        <em id="conjecture-placeholder">Entrez les valeurs de p et q ci-dessus, puis cliquez sur le bouton pour générer l'énoncé mathématique correspondant à votre cas.</em>
+    </div>
+
+    <div class="form-group">
+        <label><span id="label-n">Nombre de départ n =</span> <input type="number" id="input_n" value="135" min="1"></label>
+        <button id="btn-simulate" class="action-btn" onclick="lancerSimulation()">Simuler la trajectoire et tracer le graphe</button>
+    </div>
+
+    <div id="log-simulation" class="blue-log" style="display: none;"></div>
+    
+    <div class="controls" id="zoom-controls" style="display: none;">
+        <label><span id="label-zoom">🔍 Zoom du graphe :</span>
+            <input type="range" id="zoomSlider" min="10" max="300" value="100" oninput="changerZoom()">
+        </label>
+    </div>
+
+    <div class="svg-container" id="svg-wrap" style="display: none;">
+        <svg id="graphBox" preserveAspectRatio="xMidYMid meet">
+            <defs>
+                <marker id="arrow" viewBox="0 -5 10 10" refX="22" refY="0" markerWidth="6" markerHeight="6" orient="auto">
+                    <path d="M0,-5L10,0L0,5" fill="gray"></path>
+                </marker>
+            </defs>
+            <g id="edges"></g>
+            <g id="nodes"></g>
+        </svg>
+    </div>
+</div>
+
+<script>
+window.onload = () => { setLang('en'); genererConjecture(); };
+const ensembleExceptionnel = {
+    "1,0": [[14, 20, 28, 38, 52, 70, 94, 126, 42, 14]],
+    "2,1": [[74, 100, 136, 184, 248, 332, 444, 74]],
+    "2,2": [[67, 102, 156, 236, 356, 536, 67]], 
+    "3,0": [[280, 312, 352, 392, 440, 496, 552, 616, 688, 768, 856, 952, 1064, 1184, 1320, 1472, 1640, 1824, 2032, 2264, 2520, 280]], 
+    "4,0": [[1264, 1344, 1424, 1520, 1616, 1712, 1824, 1936, 2064, 2192, 2336, 2480, 2640, 2800, 2976, 3152, 3344, 3552, 3776, 4000, 4240, 4496, 4768, 5056, 5360, 5680, 6016, 6384, 6768, 7168, 7600, 8048, 8528, 9040, 9584, 10160, 10768, 11408, 12080, 12800, 13568, 14368, 15216, 16112, 17072, 18080, 19152, 20288, 21488, 1264]], 
+    "5,2": [
+        [76200, 84688, 94112, 104576, 116224, 129152, 143520, 159488, 177216, 196928, 218816, 243136, 270176, 300224, 333600, 370688, 411904, 457696, 508576, 565088, 627904, 697696, 775232, 861376, 957088, 1063456, 1181632, 1312928, 1458816, 1620928, 1801056, 2001184, 2223552, 2470624, 2745152, 3050176, 3389088, 3765664, 4184096, 4649024, 5165600, 5739584, 6377344, 7085952, 196832, 218720, 243040, 270048, 300064, 333408, 370464, 411648, 457408, 508256, 564736, 627488, 697216, 774688, 860768, 956416, 1062688, 1180768, 1311968, 1457760, 1619744, 1799744, 1999744, 2221952, 2468864, 2743200, 76200], 
+        [87176, 96880, 107648, 119616, 132928, 147712, 164128, 182368, 202656, 225184, 250208, 278016, 308928, 343264, 381408, 423808, 470912, 523264, 581408, 646016, 717824, 797600, 886240, 984736, 1094176, 1215776, 1350880, 1500992, 1667776, 1853088, 2059008, 2287808, 2542016, 2824480, 3138336, 87176]
+    ], 
+    "6,2": [[1264, 1376, 1472, 1600, 1728, 1856, 1984, 2112, 2240, 2432, 2624, 2816, 3008, 3200, 3392, 3648, 3904, 4160, 4416, 4736, 5056, 5376, 5696, 6080, 6464, 6848, 7296, 7744, 8256, 8768, 9344, 9920, 10560, 11200, 11904, 12608, 13376, 14208, 15104, 16000, 16960, 17984, 19072, 20224, 21440, 22720, 24064, 25536, 27072, 28672, 30400, 32192, 34112, 36160, 38336, 40640, 43072, 45632, 48320, 51200, 54272, 57472, 60864, 64448, 68288, 72320, 76608, 81152, 85952, 1264]], 
+    "7,0": [[3027584, 3051136, 3074816, 3098752, 3122816, 3147136, 3171584, 3196288, 3221120, 3246208, 3271424, 3296896, 3322496, 3348352, 3374336, 3400576, 3426944, 3453568, 3480448, 3507456, 3534720, 3562240, 3589888, 3617792, 3645952, 3674240, 3702784, 3731584, 3760512, 3789696, 3819136, 3848832, 3878784, 3908864, 3939200, 3969792, 4000640, 4031744, 4063104, 4094720, 4126464, 4158464, 4190720, 4223232, 4256000, 4289024, 4322304, 4355840, 4389632, 4423680, 4457984, 4492544, 4527488, 4562688, 4598144, 4633856, 4669824, 4706048, 4742656, 4779520, 4816640, 4854016, 4891648, 4929664, 4967936, 5006464, 5045376, 5084544, 5123968, 5163776, 5203840, 5244288, 5284992, 5326080, 5367424, 5409152, 5451136, 5493504, 5536128, 5579136, 5622400, 5666048, 5710080, 5754368, 5799040, 5844096, 5889408, 5935104, 5981184, 6027648, 6074496, 6121600, 6169088, 6216960, 6265216, 6313856, 6362880, 6412288, 6462080, 6512256, 6562816, 6613760, 6665088, 6716800, 6768896, 6821376, 6874368, 6927744, 6981504, 7035648, 7090304, 7145344, 7200768, 7256704, 7313024, 7369728, 7426944, 7484544, 7542656, 7601152, 7660160, 7719552, 7779456, 7839872, 7900672, 7961984, 8023808, 8086016, 8148736, 8211968, 8275712, 8339968, 8404736, 8470016, 8535680, 8601856, 8668544, 8735744, 8803584, 8871936, 8940800, 9010176, 9080064, 9150464, 9221504, 9293056, 9365120, 9437824, 9511040, 9584896, 9659264, 9734144, 9809664, 98788992, 99554816, 100326656, 101104384, 101888256, 102678144, 103474176, 104276352, 105084800, 105899520, 106720512, 107547904, 108381696, 109221888, 110068608, 110921856, 111781760, 112648320, 113521664, 114401792, 115288704, 116182528, 117083264, 117990912, 118905600, 119827456, 120756352, 121692544, 122635904, 123586688, 124544768, 125510272, 126483328, 127463936, 128452096, 129447936, 130451456, 131462784, 132481920, 133508992, 134544000, 135587072, 136638208, 137697536, 138765056, 139840768, 140924928, 142017408, 143118336, 144227840, 145345920, 146472704, 147608192, 148752512, 149905664, 151067776, 152238848, 153419008, 154608384, 155806976, 157014784, 158232064, 159458688, 160694912, 161940736, 163196160, 164461312, 165736320, 167021184, 168316032, 169620864, 170935808, 172260992, 173596416, 174942208, 176298368, 177665024, 179042304, 180430336, 181829120, 183238656, 184659200, 186090752, 187533440, 188987264, 190452352, 191928832, 193416704, 194916096, 196427136, 197949952, 199484544, 201031040, 202589440, 204160000, 205742720, 207337728, 208945024, 210564864, 212197248, 213842304, 215500032, 217170688, 218854272, 220550912, 222260736, 223983744, 225720064, 227469952, 229233408, 231010432, 232801280, 234605952, 236424704, 238257536, 240104576, 241965952, 243841664, 245731968, 247636992, 249556736, 251491328, 253440896, 255405568, 257385472, 259380736, 261391488, 263417856, 265459968, 267517824, 269591680, 271681664, 273787776, 275910272, 278049152, 280204672, 282376832, 284565888, 286771840, 288994944, 291235328, 293492992, 295768192, 298061056, 300371712, 302700288, 305046912, 307411712, 309794816, 312196352, 314616576, 317055488, 319513344, 321990272, 324486400, 327001856, 329536768, 332091392, 334665856, 337260288, 339874816, 342509568, 345164800, 347840512, 350536960, 353254400, 355992832, 358752512, 361533568, 364336256, 367160576, 370006784, 372875136, 375765760, 378678784, 381614336, 384572672, 387553920, 390558336, 3027584]] 
+};
+
+let currentLang = 'en';
+const translations = {
+    fr: {
+        warning: "⚠️ <strong>Avertissement :</strong> Cette page sert uniquement à illustrer la conjecture et n'est pas optimisée pour effectuer des calculs sur de très grands nombres.",
+        mainTitle: "Systèmes Dynamiques Discrets modulo 2<sup>p</sup>+2<sup>q</sup>",
+        subtitle: "Voir la Conjecture de Bouhamidi - ArXiv:2601.06208, (2026), <a href=\"https://doi.org/10.48550/arXiv.2601.06208\" target=\"_blank\">arXiv.2601.06208</a>",
+        theory: `
+            <p>L'application \\( T_{p,q} \\) est définie pour tout entier \\( n \\) par :</p>
+            $$T_{p,q}(n)=\\begin{cases} 
+                \\frac{n}{d} & \\text{si } n \\equiv 0 \\pmod{d} \\\\ 
+                \\frac{(\\alpha n + \\beta [n]_{d})}{d} & \\text{si } n \\not\\equiv 0 \\pmod{d} 
+            \\end{cases}$$
+            <p>où \\( [n]_{d} \\) représente le reste de la division euclidienne de \\( n \\) par \\( d \\).</p>
+            <p> On note \\( d = 2^p+2^{q} \\), \\( \\alpha = 2^p+2^{q+1} \\) et \\( \\beta = 2^p \\) </p>
+            <p><em>Note historique :</em> Le cas spécifique où <strong>p = 0</strong> et <strong>q = 0</strong> correspond très exactement à l'application de la célèbre <strong>conjecture de Collatz</strong> (ou problème de Syracuse).</p>
+        `,
+        vulga: `
+            <h3>💡 La Règle du 10 (Conjecture grand public)</h3>
+            <p>En choisissant \\( p=3 \\) et \\( q=1 \\), on a \\( d=10 \\) ,  \\( \\alpha=12 \\)  \\( \\beta =8 \\) l'application est: </p>
+            $$T_{3,1}(n)=\\begin{cases} 
+                \\frac{n}{10} & \\text{si } n \\equiv 0 \\pmod{10} \\\\ 
+                \\frac{12n + 8[n]_{3,1}}{10} & \\text{si } n \\not\\equiv 0 \\pmod{10} 
+            \\end{cases}$$
+            <p>La théorie se transforme en un jeu arithmétique simple accessible à tous :</p>
+            <ul>
+                <li>Prenez n'importe quel nombre entier positif de départ.</li>
+                <li>S'il se termine par un zéro (multiple de 10), <strong>divisez-le par 10</strong>.</li>
+                <li>Sinon, <strong>multipliez-le par 12</strong>, ajoutez <strong>8 fois son dernier chiffre</strong>, puis divisez le résultat par 10.</li>
+                <li>Répétez le processus à l'infini.</li>
+            </ul>
+            <p><strong>La Conjecture :</strong> Quel que soit le nombre de départ, vous finirez toujours par tomber dans un cycle tournant autour du chiffre <strong>4</strong>.</p>
+        `,
+        ui: {
+            labelP: "Choix de p =",
+            labelQ: "Choix de q =",
+            btnGen: "Générer l'énoncé de la conjecture",
+            placeholderGen: "Entrez les valeurs de p et q ci-dessus, puis cliquez sur le bouton pour générer l'énoncé mathématique correspondant à votre cas.",
+            labelN: "Nombre de départ n =",
+            btnSim: "Simuler la trajectoire et tracer le graphe",
+            labelZoom: "🔍 Zoom du graphe :"
+        },
+        conj: {
+            error: "⚠️ Attention : Selon l'énoncé de la conjecture, vous devez respecter la condition <strong>p &ge; q &ge; 0</strong>.",
+            intro: (p,q,d,a,b) => `Dans le cas <strong>(p,q) = (${p}, ${q})</strong>, on a <strong>(d, &alpha;, &beta;) = (${d}, ${a}, ${b})</strong><br><br><strong>Énoncé :</strong> La conjecture énonce que :`,
+            ordre: (o) => `1) L'ordre du triplet est <strong>${o}</strong> : `,
+            oneCycle: `Il n'y a qu'<strong>un seul cycle</strong> connu.<br>`,
+            multiCycle: (o) => `Nous avons <strong>${o} cycles</strong> distincts.<br>`,
+            enonceOne: (p,q) => `2) Pour tout entier de départ n &ge; 1, les itérés par l'application \\( T_{${p},${q}} \\) finissent par atteindre l'unique cycle trivial :<br><ul>`,
+            enonceMulti: (p,q) => `2) Pour tout entier de départ n &ge; 1, les itérés par l'application \\( T_{${p},${q}} \\) finissent par atteindre l'un des cycles suivants :<br><ul>`,
+            cycleTrivItem: (t, len) => `<li>Le cycle trivial [<strong>${t.join(', ')}</strong>] de longueur <strong>${len}</strong>.</li>`,
+            cycleSecItem: (c, len) => `<li>Un cycle exceptionnel [<strong>${c.join(', ')}</strong>] de longueur <strong>${len}</strong>.</li>`,
+            noteExcep: `</ul><em>Note : Ce couple appartient à l'ensemble d'exception &Epsilon;.</em>`
+        },
+        sim: {
+            error: "Veuillez d'abord choisir p et q tels que p >= q >= 0.",
+            verdictTriv: (m) => `<strong>✅ CONJECTURE VÉRIFIÉE :</strong> La trajectoire a atteint le cycle trivial (minimum ${m}).`,
+            verdictSec: (m) => `<strong>✅ CONJECTURE VÉRIFIÉE :</strong> La trajectoire a atteint un cycle exceptionnel (minimum ${m}).`,
+            verdictAno: (m) => `<strong>🚨 ANOMALIE DÉTECTÉE :</strong> Les nombres sont devenus trop complexes pour garantir l'exactitude du cycle terminal! Minimum : ${m}.`,
+            rapport: "<strong>Rapport de simulation :</strong>\n",
+            vol: (l) => `Temps de vol (avant répétition) : <strong>${l}</strong> étapes.\n`,
+            lenCycle: (l) => `Longueur du cycle terminal : <strong>${l}</strong> itérations.\n\n`,
+            traj: (t) => `Trajectoire complète : [${t}]`
+        }
+    },
+    en: {
+        warning: "⚠️ <strong>Warning:</strong> This page is only intended to illustrate the conjecture and is not optimized to perform calculations with very large numbers.",
+        mainTitle: "Discrete Dynamical Systems modulo 2<sup>p</sup>+2<sup>q</sup>",
+        subtitle: "See Bouhamidi's Conjecture - ArXiv:2601.06208, (2026), <a href=\"https://doi.org/10.48550/arXiv.2601.06208\" target=\"_blank\">arXiv.2601.06208</a>",
+        theory: `
+            <p>The map \\( T_{p,q} \\) is defined for any integer \\( n \\) by :</p>
+            $$T_{p,q}(n)=\\begin{cases} 
+                \\frac{n}{d} & \\text{if } n \\equiv 0 \\pmod{d} \\\\ 
+                \\frac{(\\alpha n + \\beta [n]_{d})}{d} & \\text{if } n \\not\\equiv 0 \\pmod{d} 
+            \\end{cases}$$
+            <p>where \\( [n]_{d} \\) is the remainder of the Euclidean division of \\( n \\) by \\( d \\).</p>
+            <p> We define \\( d = 2^p+2^{q} \\), \\( \\alpha = 2^p+2^{q+1} \\) and \\( \\beta = 2^p \\) </p>
+            <p><em>Historical note:</em> The specific case where <strong>p = 0</strong> and <strong>q = 0</strong> corresponds exactly to the map of the famous <strong>Collatz conjecture</strong>.</p>
+        `,
+        vulga: `
+            <h3>💡 The Rule of 10 (Popularization)</h3>
+            <p>Choosing \\( p=3 \\) and \\( q=1 \\), we have \\( d=10 \\) ,  \\( \\alpha=12 \\)  \\( \\beta =8 \\). The map becomes:</p>
+            $$T_{3,1}(n)=\\begin{cases} 
+                \\frac{n}{10} & \\text{if } n \\equiv 0 \\pmod{10} \\\\ 
+                \\frac{12n + 8[n]_{3,1}}{10} & \\text{if } n \\not\\equiv 0 \\pmod{10} 
+            \\end{cases}$$
+            <p>The theory turns into an easy arithmetic game:</p>
+            <ul>
+                <li>Take any positive integer to start.</li>
+                <li>If it ends with a zero (multiple of 10), <strong>divide it by 10</strong>.</li>
+                <li>Otherwise, <strong>multiply it by 12</strong>, add <strong>8 times its last digit</strong>, then divide the result by 10.</li>
+                <li>Repeat the process infinitely.</li>
+            </ul>
+            <p><strong>The Conjecture:</strong> Regardless of the starting number, you will always eventually fall into a cycle revolving around the number <strong>4</strong>.</p>
+        `,
+        ui: {
+            labelP: "Choice of p =",
+            labelQ: "Choice of q =",
+            btnGen: "Generate the conjecture statement",
+            placeholderGen: "Enter p and q values above, then click the button to generate the mathematical statement for your case.",
+            labelN: "Starting number n =",
+            btnSim: "Simulate trajectory and draw graph",
+            labelZoom: "🔍 Graph Zoom :"
+        },
+        conj: {
+            error: "⚠️ Warning: According to the conjecture statement, you must respect the condition <strong>p &ge; q &ge; 0</strong>.",
+            intro: (p,q,d,a,b) => `In the case <strong>(p,q) = (${p}, ${q})</strong>, we have <strong>(d, &alpha;, &beta;) = (${d}, ${a}, ${b})</strong><br><br><strong>Statement:</strong> The conjecture states that:`,
+            ordre: (o) => `1) The order of the triplet is <strong>${o}</strong>: `,
+            oneCycle: `There is only <strong>one known cycle</strong>.<br>`,
+            multiCycle: (o) => `We have <strong>${o} distinct cycles</strong>.<br>`,
+            enonceOne: (p,q) => `2) For any starting integer n &ge; 1, the iterates by the map \\( T_{${p},${q}} \\) eventually reach the unique trivial cycle:<br><ul>`,
+            enonceMulti: (p,q) => `2) For any starting integer n &ge; 1, the iterates by the map \\( T_{${p},${q}} \\) eventually reach one of the following cycles:<br><ul>`,
+            cycleTrivItem: (t, len) => `<li>The trivial cycle [<strong>${t.join(', ')}</strong>] of length <strong>${len}</strong>.</li>`,
+            cycleSecItem: (c, len) => `<li>An exceptional cycle [<strong>${c.join(', ')}</strong>] of length <strong>${len}</strong>.</li>`,
+            noteExcep: `</ul><em>Note: This pair belongs to the exception set &Epsilon;.</em>`
+        },
+        sim: {
+            error: "Please choose p and q such that p >= q >= 0 first.",
+            verdictTriv: (m) => `<strong>✅ CONJECTURE VERIFIED:</strong> The trajectory reached the trivial cycle (minimum ${m}).`,
+            verdictSec: (m) => `<strong>✅ CONJECTURE VERIFIED:</strong> The trajectory reached an exceptional cycle (minimum ${m}).`,
+            verdictAno: (m) => `<strong>🚨 ANOMALY DETECTED:</strong> Numbers have become too complex to guarantee the accuracy of the terminal cycle! Minimum: ${m}.`,
+            rapport: "<strong>Simulation Report:</strong>\n",
+            vol: (l) => `Stopping time (before repetition): <strong>${l}</strong> steps.\n`,
+            lenCycle: (l) => `Length of the terminal cycle: <strong>${l}</strong> iterations.\n\n`,
+            traj: (t) => `Complete trajectory: [${t}]`
+        }
+    }
+};
+
+
+
+function setLang(lang) {
+    currentLang = lang;
+    document.getElementById('btn-fr').classList.toggle('active', lang === 'fr');
+    document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+    
+    let t = translations[lang];
+    document.getElementById('warning-message').innerHTML = t.warning;
+    document.getElementById('main-title').innerHTML = t.mainTitle;
+    document.getElementById('subtitle').innerHTML = t.subtitle;
+    document.getElementById('theory-box-content').innerHTML = t.theory;
+    document.getElementById('vulgarisation-box-content').innerHTML = t.vulga;
+    document.getElementById('label-p').innerText = t.ui.labelP;
+    document.getElementById('label-q').innerText = t.ui.labelQ;
+    document.getElementById('btn-generate').innerText = t.ui.btnGen;
+    
+    if (document.getElementById('conjecture-placeholder')) {
+        document.getElementById('conjecture-placeholder').innerText = t.ui.placeholderGen;
+    } else {
+        genererConjecture(); 
+    }
+
+    document.getElementById('label-n').innerText = t.ui.labelN;
+    document.getElementById('btn-simulate').innerText = t.ui.btnSim;
+    document.getElementById('label-zoom').innerText = t.ui.labelZoom;
+
+    if(window.MathJax) MathJax.typesetPromise();
+}
+
+function T_pq_step(m, d, alpha, beta) {
+    let remainder = m % d;
+    return (remainder === 0n) ? (m / d) : (alpha * m + beta * remainder) / d;
+}
+
+function genererCycleComplet(n_start, d, alpha, beta) {
+    let traj = [n_start];
+    let current = T_pq_step(n_start, d, alpha, beta);
+    while (current !== n_start) {
+        traj.push(current);
+        current = T_pq_step(current, d, alpha, beta);
+    }
+    traj.push(current); 
+    return traj;
+}
+
+function normalize_cycle(cycle) {
+    if (cycle.length === 0) return cycle;
+    let min_val = cycle[0];
+    let min_idx = 0;
+    for (let i = 1; i < cycle.length; i++) {
+        if (cycle[i] < min_val) {
+            min_val = cycle[i];
+            min_idx = i;
+        }
+    }
+    return cycle.slice(min_idx).concat(cycle.slice(0, min_idx));
+}
+
+function genererConjecture() {
+    let p_val = parseInt(document.getElementById('input_p').value);
+    let q_val = parseInt(document.getElementById('input_q').value);
+    let box = document.getElementById('conjecture-text');
+    let t = translations[currentLang].conj;
+
+    if (p_val < q_val || q_val < 0) {
+        box.innerHTML = t.error;
+        return;
+    }
+
+    let p = BigInt(p_val);
+    let q = BigInt(q_val);
+    let d = (2n ** p) + (2n ** q);
+    let alpha = (2n ** p) + (2n ** (q + 1n));
+    let beta = 2n ** p;
+    let min_trivial = 2n ** (p - q);
+
+    let cycle_trivial_complet = genererCycleComplet(min_trivial, d, alpha, beta);
+    let cle = p_val + "," + q_val;
+    let exceptions = ensembleExceptionnel[cle];
+    let ordre = exceptions ? exceptions.length + 1 : 1;
+
+    let html = t.intro(p_val, q_val, d, alpha, beta) + "<br>";
+    html += t.ordre(ordre);
+    
+    let lenTriv = cycle_trivial_complet.length - 1; 
+
+    if (ordre === 1) {
+        html += t.oneCycle;
+        html += t.enonceOne(p_val, q_val);
+        html += t.cycleTrivItem(cycle_trivial_complet, lenTriv);
+    } else {
+        html += t.multiCycle(ordre);
+        html += t.enonceMulti(p_val, q_val);
+        html += t.cycleTrivItem(cycle_trivial_complet, lenTriv);
+        exceptions.forEach(cyc => {
+            html += t.cycleSecItem(cyc, cyc.length - 1);
+        });
+        html += t.noteExcep;
+    }
+    html += "</ul>";
+
+    box.innerHTML = html;
+    if(window.MathJax) MathJax.typesetPromise();
+}
+
+function lancerSimulation() {
+    let p_val = parseInt(document.getElementById('input_p').value);
+    let q_val = parseInt(document.getElementById('input_q').value);
+    let t_sim = translations[currentLang].sim;
+
+    if (p_val < q_val || q_val < 0) {
+        alert(t_sim.error);
+        return;
+    }
+
+    let p = BigInt(p_val), q = BigInt(q_val);
+    let n = BigInt(document.getElementById('input_n').value);
+    let d = (2n ** p) + (2n ** q), alpha = (2n ** p) + (2n ** (q + 1n)), beta = 2n ** p;
+
+    let trajectory = [n], seen_indices = new Map();
+    seen_indices.set(n, 0);
+    let current = n, cycle = [], transient = [];
+
+    while (true) {
+        let next_val = T_pq_step(current, d, alpha, beta);
+        trajectory.push(next_val);
+        if (seen_indices.has(next_val)) {
+            let cycle_start = seen_indices.get(next_val);
+            cycle = normalize_cycle(trajectory.slice(cycle_start, -1));
+            transient = trajectory.slice(0, cycle_start);
+            break;
+        }
+        seen_indices.set(next_val, trajectory.length - 1);
+        current = next_val;
+    }
+
+    let logDiv = document.getElementById('log-simulation');
+    logDiv.style.display = 'block';
+    let min_cycle = cycle[0], expected_trivial = 2n ** (p - q);
+    let cle = p_val + "," + q_val, exceptions = ensembleExceptionnel[cle];
+    let is_exception = exceptions?.some(c => c.includes(Number(min_cycle)));
+
+    let verdict = (min_cycle === expected_trivial) ? t_sim.verdictTriv(min_cycle) : 
+                  (is_exception ? t_sim.verdictSec(min_cycle) : t_sim.verdictAno(min_cycle));
+
+    logDiv.innerHTML = t_sim.rapport + t_sim.vol(trajectory.length - 1) + t_sim.lenCycle(cycle.length) + verdict + `\n\n` + t_sim.traj(trajectory.join(', '));
+    document.getElementById('zoom-controls').style.display = 'block';
+    document.getElementById('svg-wrap').style.display = 'block';
+    dessinerGraphe(trajectory, transient, cycle);
+}
+
+function dessinerGraphe(trajectory, transient, cycle) {
+    let svgNodes = document.getElementById('nodes'), svgEdges = document.getElementById('edges');
+    svgNodes.innerHTML = svgEdges.innerHTML = ''; 
+    let pos = new Map(), entry_node = trajectory[trajectory.length - 1];
+    let R = Math.max(2.0, cycle.length * 0.3), c_len = cycle.length, entry_idx = cycle.indexOf(entry_node);
+
+    for (let i = 0; i < c_len; i++) {
+        let angle = Math.PI / 2 - (i - entry_idx) * (2 * Math.PI / c_len);
+        pos.set(cycle[i], { x: R * Math.cos(angle), y: R * Math.sin(angle), isCycle: true });
+    }
+
+    let X_spacing = 1.2, Y_spacing = 1.0, t_len = transient.length, W = Math.max(4, Math.floor(Math.sqrt(t_len)));
+    for (let i = 0; i < t_len; i++) {
+        let phase = Math.floor(i / W) % 4, col = i % W, x_idx;
+        if (phase === 0) x_idx = col; else if (phase === 1) x_idx = (W - 1) - col; else if (phase === 2) x_idx = -col; else x_idx = -(W - 1) + col;
+        pos.set(transient[t_len - 1 - i], { x: x_idx * X_spacing, y: R + 1.0 + Math.floor(i / W) * Y_spacing, isCycle: false });
+    }
+
+    let scale = 50, margin = 40, minX = 0, maxX = 0, minY = 0, maxY = 0;
+    pos.forEach(c => { minX = Math.min(minX, c.x); maxX = Math.max(maxX, c.x); minY = Math.min(minY, c.y); maxY = Math.max(maxY, c.y); });
+    let pW = (maxX - minX) * scale + margin * 2, pH = (maxY - minY) * scale + margin * 2;
+    let svg = document.getElementById('graphBox');
+    svg.setAttribute('viewBox', `0 0 ${pW} ${pH}`);
+
+    const toX = (x) => margin + (x - minX) * scale, toY = (y) => pH - margin - (y - minY) * scale;
+
+    for (let i = 0; i < trajectory.length - 1; i++) {
+        let p1 = pos.get(trajectory[i]), p2 = pos.get(trajectory[i+1]);
+        if(!p1 || !p2) continue;
+        let line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", toX(p1.x)); line.setAttribute("y1", toY(p1.y));
+        line.setAttribute("x2", toX(p2.x)); line.setAttribute("y2", toY(p2.y));
+        line.setAttribute("marker-end", "url(#arrow)");
+        svgEdges.appendChild(line);
+    }
+
+    pos.forEach((coords, node) => {
+        let px = toX(coords.x), py = toY(coords.y);
+        let circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("cx", px); circle.setAttribute("cy", py); circle.setAttribute("r", 15);
+        circle.setAttribute("class", coords.isCycle ? "node-cycle" : "node-transient");
+        svgNodes.appendChild(circle);
+        let text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        let ns = node.toString();
+        text.setAttribute("x", px); text.setAttribute("y", py + 4); text.setAttribute("text-anchor", "middle");
+        text.textContent = ns.length < 5 ? ns : ns.substring(0,2) + ".." + ns.substring(ns.length-1);
+        svgNodes.appendChild(text);
+    });
+}
+
+function changerZoom() {
+    let z = document.getElementById('zoomSlider').value, svg = document.getElementById('graphBox');
+    svg.style.width = z + '%';
+    svg.style.maxHeight = (z > 100) ? 'none' : '100%';
+}
+
+window.onload = () => { setLang('en'); genererConjecture(); };
+</script>
+</body>
+</html>

@@ -277,13 +277,14 @@ const translations = {
         mainTitle: "Systèmes Dynamiques Discrets modulo 2<sup>p</sup>+2<sup>q</sup>",
         subtitle: "Voir la Conjecture de Bouhamidi - ArXiv:2601.06208, (2026), <a href=\"https://doi.org/10.48550/arXiv.2601.06208\" target=\"_blank\">arXiv.2601.06208</a>",
         theory: `
-            <p>L'application \\( T_{p,q} \\) est définie pour tout entier \\( n \\) par :</p>
+            <p> Soient <strong>\\(p\\)</strong> et  <strong>\\(q\\)</strong> deux entiers avec 
+<strong>\\( p \\geq q \\geq 0 \\)</strong>. On considère   l'application \\( T_{p,q} \\) définie pour tout entier \\( n\\) par :</p>
             $$T_{p,q}(n)=\\begin{cases} 
                 \\frac{n}{d} & \\text{si } n \\equiv 0 \\pmod{d} \\\\ 
                 \\frac{(\\alpha n + \\beta [n]_{d})}{d} & \\text{si } n \\not\\equiv 0 \\pmod{d} 
             \\end{cases}$$
-            <p>où \\( [n]_{d} \\) représente le reste de la division euclidienne de \\( n \\) par \\( d \\).</p>
-            <p> On note \\( d = 2^p+2^{q} \\), \\( \\alpha = 2^p+2^{q+1} \\) et \\( \\beta = 2^p \\) </p>
+            <p>où \\( d = 2^p+2^{q} \\), \\( \\alpha = 2^p+2^{q+1} \\),  \\( \\beta = 2^p \\) et  \\( [n]_{d} \\) représente le reste de la division euclidienne de \\( n \\) par \\( d \\).</p>
+  
             <p><em>Note historique :</em> Le cas spécifique où <strong>p = 0</strong> et <strong>q = 0</strong> correspond très exactement à l'application de la célèbre <strong>conjecture de Collatz</strong> (ou problème de Syracuse).</p>
         `,
         vulga: `
@@ -300,7 +301,7 @@ const translations = {
                 <li>Sinon, <strong>multipliez-le par 12</strong>, ajoutez <strong>8 fois son dernier chiffre</strong>, puis divisez le résultat par 10.</li>
                 <li>Répétez le processus à l'infini.</li>
             </ul>
-            <p><strong>La Conjecture :</strong> Quel que soit le nombre de départ, vous finirez toujours par tomber dans un cycle tournant autour du chiffre <strong>4</strong>.</p>
+            <p><strong>La Conjecture :</strong> Quel que soit le nombre de départ, vous finirez toujours par atteindre le nombre <strong>4</strong>.</p>
         `,
         ui: {
             labelP: "Choix de p =",
@@ -314,13 +315,13 @@ const translations = {
         conj: {
             error: "⚠️ Attention : Selon l'énoncé de la conjecture, vous devez respecter la condition <strong>p &ge; q &ge; 0</strong>.",
             intro: (p,q,d,a,b) => `Dans le cas <strong>(p,q) = (${p}, ${q})</strong>, on a <strong>(d, &alpha;, &beta;) = (${d}, ${a}, ${b})</strong><br><br><strong>Énoncé :</strong> La conjecture énonce que :`,
-            ordre: (o) => `1) L'ordre du triplet est <strong>${o}</strong> : `,
+            ordre: (o) => `1) L'ordre du triplet <strong>(d, &alpha;, &beta;)</strong> est <strong>${o}</strong> : `,
             oneCycle: `Il n'y a qu'<strong>un seul cycle</strong> connu.<br>`,
             multiCycle: (o) => `Nous avons <strong>${o} cycles</strong> distincts.<br>`,
             enonceOne: (p,q) => `2) Pour tout entier de départ n &ge; 1, les itérés par l'application \\( T_{${p},${q}} \\) finissent par atteindre l'unique cycle trivial :<br><ul>`,
             enonceMulti: (p,q) => `2) Pour tout entier de départ n &ge; 1, les itérés par l'application \\( T_{${p},${q}} \\) finissent par atteindre l'un des cycles suivants :<br><ul>`,
-            cycleTrivItem: (t, len) => `<li>Le cycle trivial [<strong>${t.join(', ')}</strong>] de longueur <strong>${len}</strong>.</li>`,
-            cycleSecItem: (c, len) => `<li>Un cycle exceptionnel [<strong>${c.join(', ')}</strong>] de longueur <strong>${len}</strong>.</li>`,
+            cycleTrivItem: (t, len) => `<li>Le cycle trivial est [<strong>${t.join(', ')}</strong>] de longueur <strong>${len}</strong>.</li>`,
+            cycleSecItem: (c, len) => `<li>Un cycle exceptionnel est [<strong>${c.join(', ')}</strong>] de longueur <strong>${len}</strong>.</li>`,
             noteExcep: `</ul><em>Note : Ce couple appartient à l'ensemble d'exception &Epsilon;.</em>`
         },
         sim: {
@@ -330,7 +331,7 @@ const translations = {
             verdictAno: (m) => `<strong>🚨 ANOMALIE DÉTECTÉE :</strong> Les nombres sont devenus trop complexes pour garantir l'exactitude du cycle terminal! Minimum : ${m}.`,
             rapport: "<strong>Rapport de simulation :</strong>\n",
             vol: (l) => `Temps de vol (avant répétition) : <strong>${l}</strong> étapes.\n`,
-            lenCycle: (l) => `Longueur du cycle terminal : <strong>${l}</strong> itérations.\n\n`,
+            lenCycle: (l) => `Longueur du cycle terminal : <strong>${l}</strong>.\n\n`,
             traj: (t) => `Trajectoire complète : [${t}]`
         }
     },
@@ -339,14 +340,15 @@ const translations = {
         mainTitle: "Discrete Dynamical Systems modulo 2<sup>p</sup>+2<sup>q</sup>",
         subtitle: "See Bouhamidi's Conjecture - ArXiv:2601.06208, (2026), <a href=\"https://doi.org/10.48550/arXiv.2601.06208\" target=\"_blank\">arXiv.2601.06208</a>",
         theory: `
-            <p>The map \\( T_{p,q} \\) is defined for any integer \\( n \\) by :</p>
+            <p>Let  <strong>\\(p\\)</strong> and  <strong>\\(q\\)</strong> be two integers with
+<strong>\\( p \\geq q \\geq 0 \\)</strong>. We consider the map \\( T_{p,q} \\)  defined for any integer \\( n \\) by:</p>
             $$T_{p,q}(n)=\\begin{cases} 
                 \\frac{n}{d} & \\text{if } n \\equiv 0 \\pmod{d} \\\\ 
                 \\frac{(\\alpha n + \\beta [n]_{d})}{d} & \\text{if } n \\not\\equiv 0 \\pmod{d} 
             \\end{cases}$$
-            <p>where \\( [n]_{d} \\) is the remainder of the Euclidean division of \\( n \\) by \\( d \\).</p>
-            <p> We define \\( d = 2^p+2^{q} \\), \\( \\alpha = 2^p+2^{q+1} \\) and \\( \\beta = 2^p \\) </p>
-            <p><em>Historical note:</em> The specific case where <strong>p = 0</strong> and <strong>q = 0</strong> corresponds exactly to the map of the famous <strong>Collatz conjecture</strong>.</p>
+            <p>where \\( d = 2^p+2^{q} \\), \\( \\alpha = 2^p+2^{q+1} \\), \\( \\beta = 2^p \\) and \\( [n]_{d} \\) is the remainder in the Euclidean division of \\( n \\) by \\( d \\).</p>
+            <p><em>Historical note:</em> 
+The specific case where <strong>p = 0</strong> and <strong>q = 0</strong> corresponds exactly to the map of the famous <strong>Collatz conjecture</strong>.</p>
         `,
         vulga: `
             <h3>💡 The Rule of 10 (Popularization)</h3>
@@ -362,7 +364,7 @@ const translations = {
                 <li>Otherwise, <strong>multiply it by 12</strong>, add <strong>8 times its last digit</strong>, then divide the result by 10.</li>
                 <li>Repeat the process infinitely.</li>
             </ul>
-            <p><strong>The Conjecture:</strong> Regardless of the starting number, you will always eventually fall into a cycle revolving around the number <strong>4</strong>.</p>
+            <p><strong>The Conjecture:</strong> Regardless of the starting number, you will always reach the number <strong>4</strong>.</p>
         `,
         ui: {
             labelP: "Choice of p =",
@@ -376,7 +378,7 @@ const translations = {
         conj: {
             error: "⚠️ Warning: According to the conjecture statement, you must respect the condition <strong>p &ge; q &ge; 0</strong>.",
             intro: (p,q,d,a,b) => `In the case <strong>(p,q) = (${p}, ${q})</strong>, we have <strong>(d, &alpha;, &beta;) = (${d}, ${a}, ${b})</strong><br><br><strong>Statement:</strong> The conjecture states that:`,
-            ordre: (o) => `1) The order of the triplet is <strong>${o}</strong>: `,
+            ordre: (o) => `1) The order of the triplet <strong>(d, &alpha;, &beta;)</strong> is <strong>${o}</strong>: `,
             oneCycle: `There is only <strong>one known cycle</strong>.<br>`,
             multiCycle: (o) => `We have <strong>${o} distinct cycles</strong>.<br>`,
             enonceOne: (p,q) => `2) For any starting integer n &ge; 1, the iterates by the map \\( T_{${p},${q}} \\) eventually reach the unique trivial cycle:<br><ul>`,
@@ -387,8 +389,8 @@ const translations = {
         },
         sim: {
             error: "Please choose p and q such that p >= q >= 0 first.",
-            verdictTriv: (m) => `<strong>✅ CONJECTURE VERIFIED:</strong> The trajectory reached the trivial cycle (minimum ${m}).`,
-            verdictSec: (m) => `<strong>✅ CONJECTURE VERIFIED:</strong> The trajectory reached an exceptional cycle (minimum ${m}).`,
+            verdictTriv: (m) => `<strong>✅ CONJECTURE VERIFIED:</strong> The trajectory reached the trivial cycle (minimum <strong>${m}</strong>).`,
+            verdictSec: (m) => `<strong>✅ CONJECTURE VERIFIED:</strong> The trajectory reached an exceptional cycle (minimum <strong>${m}</strong>).`,
             verdictAno: (m) => `<strong>🚨 ANOMALY DETECTED:</strong> Numbers have become too complex to guarantee the accuracy of the terminal cycle! Minimum: ${m}.`,
             rapport: "<strong>Simulation Report:</strong>\n",
             vol: (l) => `Stopping time (before repetition): <strong>${l}</strong> steps.\n`,

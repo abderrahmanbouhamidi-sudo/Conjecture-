@@ -233,7 +233,7 @@
     </div>
 
     <div class="form-group">
-        <label><span id="label-n">Nombre de départ n =</span> <input type="number" id="input_n" value="135" min="1"></label>
+        <label><span id="label-n">Nombre de départ n =</span> <input type="number" id="input_n" value="9065422222577777422225777742222577774222862222737774222225777774222225777774222225777775822222897774222228977422222577777422222577777422224177774222225777774222224177774232, 46878506667093332906670933290667093329067434667285329066670933329066670933329066670933330986667477329066674772906667093332906667093332906669013329066670933329066669013329080, 4687850666709333290667093329066709332906743466728532906667093332906667" min="1"></label>
         <button id="btn-simulate" class="action-btn" onclick="lancerSimulation()">Simuler la trajectoire et tracer le graphe</button>
     </div>
 
@@ -611,11 +611,11 @@ function changerZoom() {
     let svg = document.getElementById('graphBox');
     let container = svg.parentElement; // Le conteneur qui doit scroller
 
-    // On s'assure que le conteneur permet le débordement
+    //
     container.style.overflow = "auto";
 
-    // On utilise une échelle qui part de 0.5x (50%) à 3x (300%)
-    // Ainsi, le mouvement est sensible sur toute la longueur du slider
+    // échelle qui part de 0.5x (50%) à 3x (300%)
+
     let scale = 0.5 + (z / 40); 
     
     svg.style.transform = `scale(${scale})`;

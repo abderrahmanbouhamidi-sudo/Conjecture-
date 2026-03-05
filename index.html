@@ -270,11 +270,13 @@ mjx-container[display="true"] {
 
     <div id="log-simulation" class="blue-log" style="display: none;"></div>
     
-    <div class="controls" id="zoom-controls" style="display: none;">
+<div class="controls" id="zoom-controls" style="display: none;">
         <label><span id="label-zoom">🔍 Zoom du graphe :</span>
             <input type="range" id="zoomSlider" min="10" max="300" value="100" oninput="changerZoom()">
         </label>
-    </div>
+        <button onclick="telechargerGraphe('png')" style="margin-left: 20px; font-size: 14px; padding: 5px 15px; background-color: #27ae60;">💾 PNG</button>
+        <button onclick="telechargerGraphe('svg')" style="margin-left: 5px; font-size: 14px; padding: 5px 15px; background-color: #8e44ad;">💾 SVG</button>
+</div>
 
     <div class="svg-container" id="svg-wrap" style="display: none;">
         <svg id="graphBox" preserveAspectRatio="xMidYMid meet">
@@ -670,6 +672,66 @@ function changerZoom() {
     svg.style.marginBottom = (svg.getBoundingClientRect().height * (scale - 1)) + "px";
 }
 
+function telechargerGraphe(format) {
+    let svg = document.getElementById('graphBox');
+    let serializer = new XMLSerializer();
+    let source = serializer.serializeToString(svg);
+
+    // On injecte les styles CSS directement dans le SVG pour qu'il garde ses couleurs une fois exporté
+    const styles = `
+        <style>
+            circle { stroke: #555; stroke-width: 1.5px; }
+            .node-transient { fill: #add8e6; } 
+            .node-cycle { fill: #f08080; } 
+            text { font-size: 12px; font-weight: bold; font-family: Arial, sans-serif; }
+            line { stroke: gray; stroke-width: 1.5px; }
+        </style>
+    `;
+    source = source.replace('<defs>', '<defs>' + styles);
+
+    // On s'assure que le namespace SVG est bien présent
+    if(!source.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)){
+        source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+    }
+
+    let url = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(source);
+    let fileName = "trajectoire_Tpq." + format;
+
+    if (format === 'svg') {
+        let a = document.createElement("a");
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    } else if (format === 'png') {
+        let canvas = document.createElement("canvas");
+        // On récupère les dimensions réelles calculées par votre algorithme viewBox
+        let width = svg.viewBox.baseVal.width;
+        let height = svg.viewBox.baseVal.height;
+        
+        canvas.width = width;
+        canvas.height = height;
+        let ctx = canvas.getContext("2d");
+        
+        let img = new Image();
+        img.onload = function() {
+            // Fond blanc pour le PNG (sinon il serait transparent)
+            ctx.fillStyle = "white";
+            ctx.fillRect(0, 0, width, height);
+            ctx.drawImage(img, 0, 0);
+            
+            let a = document.createElement("a");
+            a.href = canvas.toDataURL("image/png");
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        };
+        img.src = url;
+    }
+}
+    
 window.onload = () => { setLang('en'); genererConjecture(); };
 </script>
 <div style="text-align: center; margin-top: 20px; font-size: 0.9em;">

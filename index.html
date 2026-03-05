@@ -614,7 +614,8 @@ function lancerSimulation() {
         console.warn("N'oubliez pas d'ajouter la fonction dessinerGraphe() dans votre code !");
     }
 }
-function lancerSimulation_OLD() {
+
+function lancerSimulation() {
     let p_val = parseInt(document.getElementById('input_p').value);
     let q_val = parseInt(document.getElementById('input_q').value);
     let t_sim = translations[currentLang].sim;
@@ -654,11 +655,34 @@ function lancerSimulation_OLD() {
     let verdict = (min_cycle === expected_trivial) ? t_sim.verdictTriv(min_cycle) : 
                   (is_exception ? t_sim.verdictSec(min_cycle) : t_sim.verdictAno(min_cycle));
 
-    logDiv.innerHTML = t_sim.rapport + t_sim.vol(trajectory.length - 1) + t_sim.lenCycle(cycle.length) + verdict + `\n\n` + t_sim.traj(trajectory.join(', '));
+    // --- NOUVEAUTÉ : Formatage exclusif pour l'affichage texte de la trajectoire ---
+    let traj_display = [...transient];
+    let raw_cycle = trajectory.slice(transient.length, -1);
+    let hit_min = false;
+    
+    // On ajoute les éléments du cycle un par un jusqu'à taper le minimum
+    for (let i = 0; i < raw_cycle.length; i++) {
+        traj_display.push(raw_cycle[i]);
+        if (i > 0 && raw_cycle[i] === min_cycle) {
+            hit_min = true;
+            break;
+        }
+    }
+    // Si le cycle a commencé par le minimum, on fait un tour complet et on le remet à la fin
+    if (!hit_min) {
+        traj_display.push(min_cycle);
+    }
+    // -------------------------------------------------------------------------------
+
+    // On utilise "traj_display.join" pour le texte au lieu de "trajectory.join"
+    logDiv.innerHTML = t_sim.rapport + t_sim.vol(trajectory.length - 1) + t_sim.lenCycle(cycle.length) + verdict + `\n\n` + t_sim.traj(traj_display.join(', '));
     document.getElementById('zoom-controls').style.display = 'block';
     document.getElementById('svg-wrap').style.display = 'block';
+    
+    // On passe toujours la "trajectory" originale au graphe pour conserver l'angle d'entrée parfait !
     dessinerGraphe(trajectory, transient, cycle);
 }
+
 
 function dessinerGraphe(trajectory, transient, cycle) {
     let svgNodes = document.getElementById('nodes'), svgEdges = document.getElementById('edges');
@@ -677,6 +701,38 @@ function dessinerGraphe(trajectory, transient, cycle) {
         if (phase === 0) x_idx = col; else if (phase === 1) x_idx = (W - 1) - col; else if (phase === 2) x_idx = -col; else x_idx = -(W - 1) + col;
         pos.set(transient[t_len - 1 - i], { x: x_idx * X_spacing, y: R + 1.0 + Math.floor(i / W) * Y_spacing, isCycle: false });
     }
+
+    let scale = 50, margin = 40, minX = 0, maxX = 0, minY = 0, maxY = 0;
+    pos.forEach(c => { minX = Math.min(minX, c.x); maxX = Math.max(maxX, c.x); minY = Math.min(minY, c.y); maxY = Math.max(maxY, c.y); });
+    let pW = (maxX - minX) * scale + margin * 2, pH = (maxY - minY) * scale + margin * 2;
+    let svg = document.getElementById('graphBox');
+    svg.setAttribute('viewBox', `0 0 ${pW} ${pH}`);
+
+    const toX = (x) => margin + (x - minX) * scale, toY = (y) => pH - margin - (y - minY) * scale;
+
+    for (let i = 0; i < trajectory.length - 1; i++) {
+        let p1 = pos.get(trajectory[i]), p2 = pos.get(trajectory[i+1]);
+        if(!p1 || !p2) continue;
+        let line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", toX(p1.x)); line.setAttribute("y1", toY(p1.y));
+        line.setAttribute("x2", toX(p2.x)); line.setAttribute("y2", toY(p2.y));
+        line.setAttribute("marker-end", "url(#arrow)");
+        svgEdges.appendChild(line);
+    }
+
+    pos.forEach((coords, node) => {
+        let px = toX(coords.x), py = toY(coords.y);
+        let circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("cx", px); circle.setAttribute("cy", py); circle.setAttribute("r", 15);
+        circle.setAttribute("class", coords.isCycle ? "node-cycle" : "node-transient");
+        svgNodes.appendChild(circle);
+        let text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        let ns = node.toString();
+        text.setAttribute("x", px); text.setAttribute("y", py + 4); text.setAttribute("text-anchor", "middle");
+        text.textContent = ns.length < 5 ? ns : ns.substring(0,2) + ".." + ns.substring(ns.length-1);
+        svgNodes.appendChild(text);
+    });
+}
 
     let scale = 50, margin = 40, minX = 0, maxX = 0, minY = 0, maxY = 0;
     pos.forEach(c => { minX = Math.min(minX, c.x); maxX = Math.max(maxX, c.x); minY = Math.min(minY, c.y); maxY = Math.max(maxY, c.y); });

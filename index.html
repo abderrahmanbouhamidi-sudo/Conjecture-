@@ -527,7 +527,6 @@ function genererConjecture() {
     if(window.MathJax) MathJax.typesetPromise();
 }
 
-
 function lancerSimulation() {
     let p_val = parseInt(document.getElementById('input_p').value);
     let q_val = parseInt(document.getElementById('input_q').value);
@@ -546,7 +545,7 @@ function lancerSimulation() {
     seen_indices.set(n, 0);
     let current = n, cycle = [], transient = [];
 
-    // Nouveaux drapeaux pour gérer l'arrêt sur le minimum
+    // Drapeaux pour gérer l'arrêt sur le minimum
     let cycle_detected = false;
     let cycle_min = null;
 
@@ -556,21 +555,21 @@ function lancerSimulation() {
 
         if (!cycle_detected) {
             if (seen_indices.has(next_val)) {
-                // 1. Le cycle est détecté pour la première fois
+                // 1. Le cycle est détecté
                 cycle_detected = true;
                 let cycle_start = seen_indices.get(next_val);
                 
-                // 2. On extrait le cycle brut pour l'analyser
+                // 2. On extrait le cycle brut
                 let raw_cycle = trajectory.slice(cycle_start, trajectory.length - 1);
                 
-                // 3. On cherche le minimum du cycle (adapté pour les BigInt)
+                // 3. On trouve le minimum du cycle
                 cycle_min = raw_cycle.reduce((min, val) => (val < min ? val : min), raw_cycle[0]);
                 
-                // 4. On prépare les variables pour l'affichage textuel
+                // 4. On prépare le cycle normalisé (pour le texte) et la phase transitoire
                 cycle = normalize_cycle(raw_cycle); 
                 transient = trajectory.slice(0, cycle_start);
                 
-                // 5. Si la valeur qui a fermé la boucle EST le minimum, on s'arrête tout de suite
+                // 5. Arrêt immédiat si la boucle se ferme sur le minimum
                 if (next_val === cycle_min) {
                     break;
                 }
@@ -578,28 +577,43 @@ function lancerSimulation() {
                 seen_indices.set(next_val, trajectory.length - 1);
             }
         } else {
-            // on continue de calculer et d'ajouter à la trajectoire jusqu'à retomber exactement sur la valeur minimale
+            // On continue d'ajouter à "trajectory" jusqu'à retomber sur le minimum
             if (next_val === cycle_min) {
                 break;
             }
         }
         current = next_val;
     }
+
     let logDiv = document.getElementById('log-simulation');
     logDiv.style.display = 'block';
-    let min_cycle = cycle[0], expected_trivial = 2n ** (p - q);
-    let cle = p_val + "," + q_val, exceptions = ensembleExceptionnel[cle];
+    
+    let min_cycle = cycle[0]; // "cycle" étant normalisé, le minimum est toujours en indice 0
+    let expected_trivial = 2n ** (p - q);
+    let cle = p_val + "," + q_val;
+    let exceptions = ensembleExceptionnel[cle];
     let is_exception = exceptions?.some(c => c.includes(Number(min_cycle)));
 
     let verdict = (min_cycle === expected_trivial) ? t_sim.verdictTriv(min_cycle) : 
                   (is_exception ? t_sim.verdictSec(min_cycle) : t_sim.verdictAno(min_cycle));
 
-    logDiv.innerHTML = t_sim.rapport + t_sim.vol(trajectory.length - 1) + t_sim.lenCycle(cycle.length) + verdict + `\n\n` + t_sim.traj(trajectory.join(', '));
+    // Affichage texte du log
+    logDiv.innerHTML = t_sim.rapport + 
+                       t_sim.vol(trajectory.length - 1) + 
+                       t_sim.lenCycle(cycle.length) + 
+                       verdict + `\n\n` + 
+                       t_sim.traj(trajectory.join(', '));
+                       
     document.getElementById('zoom-controls').style.display = 'block';
     document.getElementById('svg-wrap').style.display = 'block';
-    dessinerGraphe(trajectory, transient, cycle);
+    
+    // Appel de la fonction de graphe avec la trajectoire complète allant jusqu'au minimum
+    if (typeof dessinerGraphe === "function") {
+        dessinerGraphe(trajectory, transient, cycle);
+    } else {
+        console.warn("N'oubliez pas d'ajouter la fonction dessinerGraphe() dans votre code !");
+    }
 }
-
 function lancerSimulation_OLD() {
     let p_val = parseInt(document.getElementById('input_p').value);
     let q_val = parseInt(document.getElementById('input_q').value);

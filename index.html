@@ -527,7 +527,80 @@ function genererConjecture() {
     if(window.MathJax) MathJax.typesetPromise();
 }
 
+
 function lancerSimulation() {
+    let p_val = parseInt(document.getElementById('input_p').value);
+    let q_val = parseInt(document.getElementById('input_q').value);
+    let t_sim = translations[currentLang].sim;
+
+    if (p_val < q_val || q_val < 0) {
+        alert(t_sim.error);
+        return;
+    }
+
+    let p = BigInt(p_val), q = BigInt(q_val);
+    let n = BigInt(document.getElementById('input_n').value);
+    let d = (2n ** p) + (2n ** q), alpha = (2n ** p) + (2n ** (q + 1n)), beta = 2n ** p;
+
+    let trajectory = [n], seen_indices = new Map();
+    seen_indices.set(n, 0);
+    let current = n, cycle = [], transient = [];
+
+    // Nouveaux drapeaux pour gérer l'arrêt sur le minimum
+    let cycle_detected = false;
+    let cycle_min = null;
+
+    while (true) {
+        let next_val = T_pq_step(current, d, alpha, beta);
+        trajectory.push(next_val);
+
+        if (!cycle_detected) {
+            if (seen_indices.has(next_val)) {
+                // 1. Le cycle est détecté pour la première fois
+                cycle_detected = true;
+                let cycle_start = seen_indices.get(next_val);
+                
+                // 2. On extrait le cycle brut pour l'analyser
+                let raw_cycle = trajectory.slice(cycle_start, trajectory.length - 1);
+                
+                // 3. On cherche le minimum du cycle (adapté pour les BigInt)
+                cycle_min = raw_cycle.reduce((min, val) => (val < min ? val : min), raw_cycle[0]);
+                
+                // 4. On prépare les variables pour l'affichage textuel
+                cycle = normalize_cycle(raw_cycle); 
+                transient = trajectory.slice(0, cycle_start);
+                
+                // 5. Si la valeur qui a fermé la boucle EST le minimum, on s'arrête tout de suite
+                if (next_val === cycle_min) {
+                    break;
+                }
+            } else {
+                seen_indices.set(next_val, trajectory.length - 1);
+            }
+        } else {
+            // on continue de calculer et d'ajouter à la trajectoire jusqu'à retomber exactement sur la valeur minimale
+            if (next_val === cycle_min) {
+                break;
+            }
+        }
+        current = next_val;
+    }
+    let logDiv = document.getElementById('log-simulation');
+    logDiv.style.display = 'block';
+    let min_cycle = cycle[0], expected_trivial = 2n ** (p - q);
+    let cle = p_val + "," + q_val, exceptions = ensembleExceptionnel[cle];
+    let is_exception = exceptions?.some(c => c.includes(Number(min_cycle)));
+
+    let verdict = (min_cycle === expected_trivial) ? t_sim.verdictTriv(min_cycle) : 
+                  (is_exception ? t_sim.verdictSec(min_cycle) : t_sim.verdictAno(min_cycle));
+
+    logDiv.innerHTML = t_sim.rapport + t_sim.vol(trajectory.length - 1) + t_sim.lenCycle(cycle.length) + verdict + `\n\n` + t_sim.traj(trajectory.join(', '));
+    document.getElementById('zoom-controls').style.display = 'block';
+    document.getElementById('svg-wrap').style.display = 'block';
+    dessinerGraphe(trajectory, transient, cycle);
+}
+
+function lancerSimulation_OLD() {
     let p_val = parseInt(document.getElementById('input_p').value);
     let q_val = parseInt(document.getElementById('input_q').value);
     let t_sim = translations[currentLang].sim;

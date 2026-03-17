@@ -90,6 +90,11 @@
         <h2 id="subtitle">Voir la Conjecture de Bouhamidi - ArXiv:2601.06208, (2026), <a href="https://doi.org/10.48550/arXiv.2601.06208" target="_blank">arXiv.2601.06208</a></h2>
     </div>
 
+    <div style="text-align: center; margin-bottom: 30px;">
+        <a href="simulation.html" id="btn-goto-sim-top" class="btn-simulator">🚀 Open the Simulator and Test the Conjecture</a>
+    </div>
+
+
     <div class="theory-box" id="theory-box-content"></div>
 
     <div class="vulgarisation-box" id="vulgarisation-box-content"></div>
@@ -111,6 +116,7 @@ const translations = {
     fr: {
         mainTitle: "Systèmes Dynamiques Discrets modulo 2<sup>p</sup>+2<sup>q</sup>",
         subtitle: "Voir la Conjecture de Bouhamidi - ArXiv:2601.06208, (2026), <a href=\"https://doi.org/10.48550/arXiv.2601.06208\" target=\"_blank\">arXiv.2601.06208</a>",
+btnGotoSim: "🚀 Lancer le Simulateur et tester la Conjecture",
         theory: `
             <p>Soient <strong>\\(p\\)</strong> et <strong>\\(q\\)</strong> deux entiers avec <strong>\\( p \\geq q \\geq 0 \\)</strong>. On considère l'application \\( T_{p,q} \\) définie pour tout entier \\( n\\geq 1\\) par :</p>
             $$T_{p,q}(n)=\\begin{cases} 
@@ -118,48 +124,79 @@ const translations = {
                 \\frac{(\\alpha n + \\beta [n]_{d})}{d} & \\text{si } n \\not\\equiv 0 \\pmod{d} 
             \\end{cases}$$
             <p>où \\( d = 2^p+2^{q} \\), \\( \\alpha = 2^p+2^{q+1} \\), \\( \\beta = 2^p \\) et \\( [n]_{d} \\) représente le reste de la division euclidienne de \\( n \\) par \\( d \\).</p>
-            
-            <p><strong>Ensemble Exceptionnel</strong></p>
-            <p>$$\\mathbb{E}=\\{(1,0),(2,1),(2,2),(3,0),(4,0),(5,2),(6,2),(7,0)\\}.$$</p>
+
+<p><em>Note historique :</em> Le cas spécifique où <strong>p = 0</strong> et <strong>q = 0</strong> correspond très exactement à l'application de la célèbre <strong>conjecture de Collatz</strong> (ou problème de Syracuse).</p>
+
+
+
+ <p>Un cycle commençant par un <strong>élément minimal \\(\\omega_{p,q}\\)</srtong> sera noté \\(\\Omega(\\omega_{p,q})\\).</p>
+
+
+
+<div class="main-conjecture">
+                <h4>🏆 Main Conjecture</h4>
+                <p>Pour tous les entiers \\(p\\) et \\(q\\) tels que \\(p\\geq q\\geq 0\\), alors:</p>
+                <ol>
+                    <li><strong>Si \\((p,q)\\notin \\mathbb{E}\\) :</strong> L'application \\(T_{p,q}\\) possède un et un seul cycle, le cycle trivial \\(\\Omega(2^{p-q})\\) commençant par \\(2^{p-q}\\) et de longueur \\(2^{p-q}+q+1\\).</li>
+                    <li><strong>Si \\((p,q)\\in \\mathbb{E}\\) :</strong> L'application \\(T_{p,q}\\)  possède exactement deux cycles, le cycle trivial \\(\\Omega(2^{p-q})\\) et le cycle secondaire \\(\\Omega(\\omega_{p,q})\\), sauf pour le cas \\((p,q)=(5,2)\\) où elle possède exactement trois cycles : le cycle trivial \\(\\Omega(2^{5-2})\\)  et deux cycles secondaires \\(\\Omega(76200)\\) et \\(\\Omega(87176)\\).</li>
+                </ol>
+                <p>De plus, pour tous les entiers \\(p\\) et \\(q\\) tels que \\(p\\geq q\\geq 0\\) et pour tout entier \\(n\\geq 1\\), la trajectoire issue de \\(n\\) est bornée et finit par atteindre un élément de l'ensemble \\(A_{p,q}\\).</p>
+<p>Les ensembles   \\(\\mathbb{E}\\), \\(A_{p,q}\\) et les  éléments \\(\\omega_{p,q}\\) sont donnés en dessous. </p>
+            </div>          
+
+
+
+<p><strong>L'Ensemble Exceptionnel  est:</strong></p>
+<p>$$\\mathbb{E}=\\{(1,0),(2,1),(2,2),(3,0),(4,0),(5,2),(6,2),(7,0)\\}.$$</p>
             
 <table class="math-table">
-                <tr>
-                    <th>\\((p,q)\\)</th>
-                    <th>\\(\\omega_{p,q}\\)<br><span style="font-weight:normal; font-size:0.9em;"><strong>(Élément minimal du </strong> <br> <strong> cycle secondaire) </strong> </span></th>
-                    <th>Longueur du<br>cycle secondaire</th>
-                </tr>
-                <tr><td>\\((1,0)\\)</td><td>\\(14\\)</td><td>\\(9\\)</td></tr>
-                <tr><td>\\((2,1)\\)</td><td>\\(74\\)</td><td>\\(7\\)</td></tr>
-                <tr><td>\\((2,2)\\)</td><td>\\(67\\)</td><td>\\(6\\)</td></tr>
-                <tr><td>\\((3,0)\\)</td><td>\\(280\\)</td><td>\\(21\\)</td></tr>
-                <tr><td>\\((4,0)\\)</td><td>\\(1264\\)</td><td>\\(49\\)</td></tr>
-                <tr><td>\\((5,2)\\)</td><td>\\(\\omega_{(5,2)}^{(0)}=76200\\)<br>\\(\\omega_{(5,2)}^{(1)}=87176\\)</td><td>\\(70\\)<br>\\(35\\)</td></tr>
-                <tr><td>\\((6,2)\\)</td><td>\\(1264\\)</td><td>\\(69\\)</td></tr>
-                <tr><td>\\((7,0)\\)</td><td>\\(3027584\\)</td><td>\\(630\\)</td></tr>
-            </table>
+<tr>
+<th>\\((p,q)\\)</th> 
+<td>\\((1,0)\\)</td>
+<td>\\((2,1)\\)</td>
+<td>\\((2,2)\\)</td>
+<td>\\((3,0)\\)</td>
+<td>\\((4,0)\\)</td>
+<td>\\((5,2)\\)</td>
+<td>\\((6,2)\\)</td>
+<td>\\((7,0)\\)</td>
+</tr>
 
-            <p>Un cycle commençant par un élément minimal \\(\\omega_{p,q}\\) sera noté \\(\\Omega(\\omega_{p,q})\\).</p>
+<tr>
+<th>\\(\\omega_{p,q}\\)<br>Element minimal <br>du cycle secondaire</th>
+<td>\\(14\\)</td>
+<td>\\(74\\)</td>
+<td>\\(67\\)</td>
+<td>\\(280\\)</td>
+<td>\\(1264\\)</td>
+<td>\\(\\omega_{(5,2)}^{(0)}=76200\\)<br>\\(\\omega_{(5,2)}^{(1)}=87176\\)</td>
+<td>\\(1264\\)</td>
+<td>\\(3027584\\)</td>
+</tr>
 
-            <p><strong>L'ensemble des attracteurs :</strong></p>
-            $$ A_{p,q} = \\begin{cases} 
+
+<tr>
+<th>Longueur<br>du cycle secondaire</th>
+<td>\\(9\\)</td>
+<td>\\(7\\)</td>
+<td>\\(6\\)</td>
+<td>\\(21\\)</td>
+<td>\\(49\\)</td>
+<td>\\(70\\)<br>\\(35\\)</td>
+<td>\\(69\\)</td>
+<td>\\(630\\)</td>
+</tr>
+</table>
+
+ 
+<p><strong>L'ensemble des attracteurs :</strong></p>
+$$ A_{p,q} = \\begin{cases} 
             \\{2^{p-q}\\} & \\text{si } (p,q)\\notin \\mathbb{E} \\\\ 
             \\{2^{p-q},\\omega_{p,q}\\} & \\text{si } (p,q)\\in \\mathbb{E} \\text{ et } (p,q)\\not=(5,2) \\\\ 
             \\{2^{5-2},76200,87176\\} & \\text{si } (p,q)=(5,2) 
             \\end{cases} $$
 
-<div class="main-conjecture">
-                <h4>🏆 Main Conjecture</h4>
-                <p>Pour tous les entiers \\(p\\) et \\(q\\) tels que \\(p\\geq q\\geq 0\\), l'application \\(T_{p,q}\\) :</p>
-                <ol>
-                    <li><strong>Si \\((p,q)\\notin \\mathbb{E}\\) :</strong> possède un et un seul cycle, le cycle trivial \\(\\Omega(2^{p-q})\\) commençant par \\(2^{p-q}\\) et de longueur \\(2^{p-q}+q+1\\).</li>
-                    <li><strong>Si \\((p,q)\\in \\mathbb{E}\\) :</strong> possède exactement deux cycles, le cycle trivial \\(\\Omega(2^{p-q})\\) et le cycle secondaire \\(\\Omega(\\omega_{p,q})\\), sauf pour le cas \\((p,q)=(5,2)\\) où elle possède exactement trois cycles : le cycle trivial et deux cycles secondaires \\(\\Omega(76200)\\) et \\(\\Omega(87176)\\).</li>
-                </ol>
-                <p>De plus, pour tous les entiers \\(p\\) et \\(q\\) tels que \\(p\\geq q\\geq 0\\) et pour tout entier \\(n\\geq 1\\), la trajectoire issue de \\(n\\) est bornée et finit par atteindre un élément de l'ensemble \\(A_{p,q}\\).</p>
-            </div>
 
-
-
-            <p><em>Note historique :</em> Le cas spécifique où <strong>p = 0</strong> et <strong>q = 0</strong> correspond très exactement à l'application de la célèbre <strong>conjecture de Collatz</strong> (ou problème de Syracuse).</p>
         `,
         vulga: `
             <h3>💡 La Règle du 10 (Conjecture grand public)</h3>
@@ -189,30 +226,70 @@ const translations = {
                 \\frac{(\\alpha n + \\beta [n]_{d})}{d} & \\text{if } n \\not\\equiv 0 \\pmod{d} 
             \\end{cases}$$
             <p>where \\( d = 2^p+2^{q} \\), \\( \\alpha = 2^p+2^{q+1} \\), \\( \\beta = 2^p \\) and \\( [n]_{d} \\) is the remainder in the Euclidean division of \\( n \\) by \\( d \\).</p>
+
+<p><em>Historical note:</em> The specific case where <strong>p = 0</strong> and <strong>q = 0</strong> corresponds exactly to the map of the famous <strong>Collatz conjecture</strong> (Syracuse problem).</p>
+
+<p>A cycle starting with a minimal element \\(\\omega_{p,q}\\) will be denoted by \\(\\Omega(\\omega_{p,q})\\).</p>
+
+
+<div class="main-conjecture">
+                <h4>🏆 Main Conjecture</h4>
+                <p>For all integers \\(p\\) and \\(q\\) such that \\(p\\geq q\\geq 0\\), then:</p>
+                <ol>
+                    <li><strong>If \\((p,q)\\notin \\mathbb{E}\\):</strong> The mapping \\(T_{p,q}\\) has only <strong>one</strong> cycle, the trivial one \\(\\Omega(2^{p-q})\\) starting with \\(2^{p-q}\\) and of length \\(2^{p-q}+q+1\\).</li>
+                    <li><strong>If \\((p,q)\\in \\mathbb{E}\\):</strong> The mapping \\(T_{p,q}\\) has exactly <strong>two</strong> cycles, the trivial one \\(\\Omega(2^{p-q})\\) and the secondary one \\(\\Omega(\\omega_{p,q})\\), except for \\((p,q)=(5,2)\\) where it has exactly <strong>three</strong> cycles: the trivial one \\(\\Omega(2^{5-2})\\) and two secondary ones \\(\\Omega(76200)\\) and \\(\\Omega(87176)\\).</li>
+                </ol>
+                <p>Furthermore, for all integers \\(p\\) and \\(q\\) such that \\(p\\geq q\\geq 0\\) and for any integer \\(n\\geq 1\\), the trajectory starting with \\(n\\) is bounded and eventually reaches an element of the set \\(A_{p,q}\\).</p>
+<p>The sets  \\(\\mathbb{E}\\), \\(A_{p,q}\\) and the elements \\(\\omega_{p,q}\\) are given below. </p>
+            </div>
+          
+<p><strong>Exceptional Set</strong></p>
+<p>$$\\mathbb{E}=\\{(1,0),(2,1),(2,2),(3,0),(4,0),(5,2),(6,2),(7,0)\\}.$$</p>
+
+
             
-            <p><strong>Exceptional Set</strong></p>
-            <p>$$\\mathbb{E}=\\{(1,0),(2,1),(2,2),(3,0),(4,0),(5,2),(6,2),(7,0)\\}.$$</p>
-
-
 <table class="math-table">
-                <tr>
-                    <th>\\((p,q)\\)</th>
-                    <th>\\(\\omega_{p,q}\\)<br><span style="font-weight:normal; font-size:0.9em;"> <strong>(Minimal element of the </strong> <br> <strong> secondary cycle) </strong> </span></th>
-                    <th>Length of the<br>secondary cycle</th>
-                </tr>
-                <tr><td>\\((1,0)\\)</td><td>\\(14\\)</td><td>\\(9\\)</td></tr>
-                <tr><td>\\((2,1)\\)</td><td>\\(74\\)</td><td>\\(7\\)</td></tr>
-                <tr><td>\\((2,2)\\)</td><td>\\(67\\)</td><td>\\(6\\)</td></tr>
-                <tr><td>\\((3,0)\\)</td><td>\\(280\\)</td><td>\\(21\\)</td></tr>
-                <tr><td>\\((4,0)\\)</td><td>\\(1264\\)</td><td>\\(49\\)</td></tr>
-                <tr><td>\\((5,2)\\)</td><td>\\(\\omega_{(5,2)}^{(0)}=76200\\)<br>\\(\\omega_{(5,2)}^{(1)}=87176\\)</td><td>\\(70\\)<br>\\(35\\)</td></tr>
-                <tr><td>\\((6,2)\\)</td><td>\\(1264\\)</td><td>\\(69\\)</td></tr>
-                <tr><td>\\((7,0)\\)</td><td>\\(3027584\\)</td><td>\\(630\\)</td></tr>
-            </table>
+<tr>
+<th>\\((p,q)\\)</th> 
+<td>\\((1,0)\\)</td>
+<td>\\((2,1)\\)</td>
+<td>\\((2,2)\\)</td>
+<td>\\((3,0)\\)</td>
+<td>\\((4,0)\\)</td>
+<td>\\((5,2)\\)</td>
+<td>\\((6,2)\\)</td>
+<td>\\((7,0)\\)</td>
+</tr>
+
+<tr>
+<th>\\(\\omega_{p,q}\\)<br>Minimal element of the<br>secondary cycle</th>
+<td>\\(14\\)</td>
+<td>\\(74\\)</td>
+<td>\\(67\\)</td>
+<td>\\(280\\)</td>
+<td>\\(1264\\)</td>
+<td>\\(\\omega_{(5,2)}^{(0)}=76200\\)<br>\\(\\omega_{(5,2)}^{(1)}=87176\\)</td>
+<td>\\(1264\\)</td>
+<td>\\(3027584\\)</td>
+</tr>
+
+
+<tr>
+<th>Length of the<br>secondary cycle</th>
+<td>\\(9\\)</td>
+<td>\\(7\\)</td>
+<td>\\(6\\)</td>
+<td>\\(21\\)</td>
+<td>\\(49\\)</td>
+<td>\\(70\\)<br>\\(35\\)</td>
+<td>\\(69\\)</td>
+<td>\\(630\\)</td>
+</tr>
+</table>
 
 
 
-            <p>A cycle starting with a minimal element \\(\\omega_{p,q}\\) will be denoted by \\(\\Omega(\\omega_{p,q})\\).</p>
+
 
             <p><strong>The set of attractors:</strong></p>
             $$ A_{p,q} = \\begin{cases} 
@@ -221,17 +298,7 @@ const translations = {
             \\{2^{5-2},76200,87176\\} & \\text{if } (p,q)=(5,2) 
             \\end{cases} $$
 
-<div class="main-conjecture">
-                <h4>🏆 Main Conjecture</h4>
-                <p>For all integers \\(p\\) and \\(q\\) such that \\(p\\geq q\\geq 0\\), the mapping \\(T_{p,q}\\):</p>
-                <ol>
-                    <li><strong>If \\((p,q)\\notin \\mathbb{E}\\):</strong> has only <strong>one</strong> cycle, the trivial one \\(\\Omega(2^{p-q})\\) starting with \\(2^{p-q}\\) and of length \\(2^{p-q}+q+1\\).</li>
-                    <li><strong>If \\((p,q)\\in \\mathbb{E}\\):</strong> has exactly <strong>two</strong> cycles, the trivial one \\(\\Omega(2^{p-q})\\) and the secondary one \\(\\Omega(\\omega_{p,q})\\), except for \\((p,q)=(5,2)\\) where it has exactly <strong>three</strong> cycles: the trivial one and two secondary ones \\(\\Omega(76200)\\) and \\(\\Omega(87176)\\).</li>
-                </ol>
-                <p>Furthermore, for all integers \\(p\\) and \\(q\\) such that \\(p\\geq q\\geq 0\\) and for any integer \\(n\\geq 1\\), the trajectory starting with \\(n\\) is bounded and eventually reaches an element of the set \\(A_{p,q}\\).</p>
-            </div>
 
-            <p><em>Historical note:</em> The specific case where <strong>p = 0</strong> and <strong>q = 0</strong> corresponds exactly to the map of the famous <strong>Collatz conjecture</strong> (Syracuse problem).</p>
         `,
         vulga: `
             <h3>💡 The Rule of 10 (Popularization)</h3>
@@ -249,7 +316,7 @@ const translations = {
             </ul>
             <p><strong>The Conjecture:</strong> Regardless of the starting number, you will always reach the number <strong>4</strong> after a finite number of iterations.</p>
         `,
-        btnGotoSim: "🚀 Open Simulator and Test the Conjecture"
+        btnGotoSim: "🚀 Open the Simulator and Test the Conjecture"
     }
 };
 
@@ -264,6 +331,7 @@ function setLang(lang) {
     document.getElementById('theory-box-content').innerHTML = t.theory;
     document.getElementById('vulgarisation-box-content').innerHTML = t.vulga;
     document.getElementById('btn-goto-sim').innerText = t.btnGotoSim;
+    document.getElementById('btn-goto-sim-top').innerText = t.btnGotoSim;
     
     if(window.MathJax) MathJax.typesetPromise();
 }

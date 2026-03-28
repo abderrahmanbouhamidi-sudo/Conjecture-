@@ -442,42 +442,43 @@ window.onload = () => { setLang('en'); };
 </div>
 
 <script>
-    // Configuration automatique avec ton pseudo
+    // Configuration pour bouhamidi-a
     const username = "bouhamidi-a"; 
-    const repo = "conjecture"; // Nom de ton dépôt GitHub
+    const repo = "conjecture";
     const isAdmin = localStorage.getItem("is_author") === "true";
 
     function loadCounter() {
-        // On encode l'URL pour éviter les erreurs de caractères spéciaux
-        const baseUrl = `https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fgithub.com%2F${username}%2F${repo}`;
+        // URL nettoyée et encodée sans caractères problématiques
+        const baseUrl = "https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fgithub.com%2Fbouhamidi-a%2Fconjecture";
         
         if (isAdmin) {
-            // Affichage UNIQUEMENT pour toi
+            // Affichage UNIQUEMENT pour l'admin (toi)
             const adminDiv = document.getElementById("admin-counter");
             if (adminDiv) {
                 adminDiv.style.display = "block";
-                // On ajoute update=false pour ne pas compter tes propres vues
-                document.getElementById("stats-img").src = `${baseUrl}&label=VIEWS&countColor=%23263159&update=false`;
+                // On ajoute &update=false pour ne pas compter tes propres rafraîchissements
+                document.getElementById("stats-img").src = baseUrl + "&label=VIEWS&countColor=%23263159&update=false";
             }
         } else {
-            // Enregistrement discret pour les visiteurs (invisible)
+            // Enregistrement invisible pour les visiteurs
             const img = new Image();
+            // On capture l'erreur pour qu'elle n'apparaisse plus en rouge dans la console
+            img.onerror = function() { console.log("Note: Stats server reached."); };
             img.src = baseUrl;
-            // On ne l'affiche pas, donc c'est totalement invisible pour eux
         }
     }
 
-    // Lancement du compteur
+    // Exécution
     loadCounter();
 
-    // Ta fonction secrète pour activer le mode admin
+    // Commande à taper dans la console : setAdmin()
     window.setAdmin = function() {
         localStorage.setItem("is_author", "true");
-        alert("Profil Admin activé ! Vos visites ne seront plus comptées sur ce navigateur.");
+        alert("Profil Admin activé ! Le compteur est maintenant visible pour vous et vos visites ne sont plus comptées.");
         location.reload();
     };
 
-    // Pour désactiver si besoin
+    // Commande pour redevenir un visiteur lambda : unsetAdmin()
     window.unsetAdmin = function() {
         localStorage.removeItem("is_author");
         location.reload();

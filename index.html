@@ -442,33 +442,47 @@ window.onload = () => { setLang('en'); };
 </div>
 
 <script>
-    // 1. CONFIGURATION
-    const username = "[TonPseudoGitHub]"; // REMPLACE PAR TON PSEUDO
-    const repo = "Bouhamidi-Dynamics-Sim";
+    // Configuration automatique avec ton pseudo
+    const username = "bouhamidi-a"; 
+    const repo = "conjecture"; // Nom de ton dépôt GitHub
     const isAdmin = localStorage.getItem("is_author") === "true";
 
-    // 2. LOGIQUE D'EXCLUSION ET D'AFFICHAGE
-    if (isAdmin) {
-        // Tu es l'admin : on affiche le compteur mais on ne compte PAS la visite
-        // On utilise le mode 'nop' ou une image statique pour ne pas incrémenter
-        document.getElementById("admin-counter").style.display = "block";
-        document.getElementById("stats-img").src = `https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fgithub.com%2F${username}%2F${repo}&label=VIEWS&countColor=%23263159`;
-    } else {
-        // C'est un visiteur : on incrémente le compteur en arrière-plan (image invisible)
-        const img = new Image();
-        img.src = `https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fgithub.com%2F${username}%2F${repo}`;
-        // Le compteur reste display: none, donc invisible pour lui
+    function loadCounter() {
+        // On encode l'URL pour éviter les erreurs de caractères spéciaux
+        const baseUrl = `https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fgithub.com%2F${username}%2F${repo}`;
+        
+        if (isAdmin) {
+            // Affichage UNIQUEMENT pour toi
+            const adminDiv = document.getElementById("admin-counter");
+            if (adminDiv) {
+                adminDiv.style.display = "block";
+                // On ajoute update=false pour ne pas compter tes propres vues
+                document.getElementById("stats-img").src = `${baseUrl}&label=VIEWS&countColor=%23263159&update=false`;
+            }
+        } else {
+            // Enregistrement discret pour les visiteurs (invisible)
+            const img = new Image();
+            img.src = baseUrl;
+            // On ne l'affiche pas, donc c'est totalement invisible pour eux
+        }
     }
 
-    // 3. FONCTION SECRÈTE POUR T'ACTIVER COMME ADMIN
-    // Tape 'setAdmin()' dans la console de ton navigateur (F12) pour devenir admin
+    // Lancement du compteur
+    loadCounter();
+
+    // Ta fonction secrète pour activer le mode admin
     window.setAdmin = function() {
         localStorage.setItem("is_author", "true");
-        alert("Profil Admin activé. Tes visites ne seront plus comptées et le badge est visible.");
+        alert("Profil Admin activé ! Vos visites ne seront plus comptées sur ce navigateur.");
+        location.reload();
+    };
+
+    // Pour désactiver si besoin
+    window.unsetAdmin = function() {
+        localStorage.removeItem("is_author");
         location.reload();
     };
 </script>
-
     <footer style="margin-top: 50px; text-align: center; font-family: sans-serif; color: #555;">
     <hr style="width: 50%; border: 0; border-top: 1px solid #eee; margin-bottom: 20px;">
 

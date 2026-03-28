@@ -436,16 +436,41 @@ function setLang(lang) {
 window.onload = () => { setLang('en'); };
 </script>
 
+
+    <div id="admin-counter" style="display: none; position: fixed; bottom: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white; padding: 5px 10px; border-radius: 5px; font-family: monospace; font-size: 12px; z-index: 1000;">
+    Admin Views: <img id="stats-img" src="" style="vertical-align: middle;">
+</div>
+
+<script>
+    // 1. CONFIGURATION
+    const username = "[TonPseudoGitHub]"; // REMPLACE PAR TON PSEUDO
+    const repo = "Bouhamidi-Dynamics-Sim";
+    const isAdmin = localStorage.getItem("is_author") === "true";
+
+    // 2. LOGIQUE D'EXCLUSION ET D'AFFICHAGE
+    if (isAdmin) {
+        // Tu es l'admin : on affiche le compteur mais on ne compte PAS la visite
+        // On utilise le mode 'nop' ou une image statique pour ne pas incrémenter
+        document.getElementById("admin-counter").style.display = "block";
+        document.getElementById("stats-img").src = `https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fgithub.com%2F${username}%2F${repo}&label=VIEWS&countColor=%23263159`;
+    } else {
+        // C'est un visiteur : on incrémente le compteur en arrière-plan (image invisible)
+        const img = new Image();
+        img.src = `https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fgithub.com%2F${username}%2F${repo}`;
+        // Le compteur reste display: none, donc invisible pour lui
+    }
+
+    // 3. FONCTION SECRÈTE POUR T'ACTIVER COMME ADMIN
+    // Tape 'setAdmin()' dans la console de ton navigateur (F12) pour devenir admin
+    window.setAdmin = function() {
+        localStorage.setItem("is_author", "true");
+        alert("Profil Admin activé. Tes visites ne seront plus comptées et le badge est visible.");
+        location.reload();
+    };
+</script>
+
     <footer style="margin-top: 50px; text-align: center; font-family: sans-serif; color: #555;">
     <hr style="width: 50%; border: 0; border-top: 1px solid #eee; margin-bottom: 20px;">
-    
-    <div style="margin-bottom: 10px;">
-        <p>Official repository: <a href="https://github.com/[YourUsername]/Bouhamidi-Dynamics" target="_blank">GitHub</a> | ArXiv: 2601.06208</p>
-    </div>
-
-    <div class="visitor-counter">
-        <img src="https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fgithub.com%2F[YourUsername]%2FBouhamidi-Dynamics-Sim&label=PAGE%20VIEWS&countColor=%23263159" alt="Visitor Counter">
-    </div>
 
     <p style="font-size: 0.8em; margin-top: 10px;">© 2026 - Bouhamidi Conjecture</p>
 </footer>
